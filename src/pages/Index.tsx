@@ -14,9 +14,9 @@ const Index = () => {
     playerX: 50,
     playerY: 50,
     threats: [
-      { id: 1, x: 30, y: 40, type: 'projectile', danger: 'high', speed: 8 },
-      { id: 2, x: 70, y: 60, type: 'enemy', danger: 'medium', speed: 3 },
-      { id: 3, x: 45, y: 25, type: 'projectile', danger: 'low', speed: 5 }
+      { id: 1, x: 30, y: 40, type: 'projectile' as const, danger: 'high' as const, speed: 8 },
+      { id: 2, x: 70, y: 60, type: 'enemy' as const, danger: 'medium' as const, speed: 3 },
+      { id: 3, x: 45, y: 25, type: 'projectile' as const, danger: 'low' as const, speed: 5 }
     ]
   });
   
