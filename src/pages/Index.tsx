@@ -5,6 +5,8 @@ import { ThreatRadar } from '@/components/ThreatRadar';
 import { DodgeConfig } from '@/components/DodgeConfig';
 import { PerformanceMetrics } from '@/components/PerformanceMetrics';
 import { ActivityLog } from '@/components/ActivityLog';
+import { ProcessScanner } from '@/components/ProcessScanner';
+import { injectionManager } from '@/utils/injectionManager';
 
 const Index = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -35,24 +37,38 @@ const Index = () => {
     uptime: '2h 34m'
   });
 
-  // Simulate real-time updates
+  // Update game state from injection when connected
   useEffect(() => {
+    if (!isConnected) return;
+
     const interval = setInterval(() => {
-      setGameState(prev => ({
-        ...prev,
-        threats: prev.threats.map(threat => ({
-          ...threat,
-          x: Math.max(5, Math.min(95, threat.x + (Math.random() - 0.5) * threat.speed)),
-          y: Math.max(5, Math.min(95, threat.y + (Math.random() - 0.5) * threat.speed))
-        }))
-      }));
+      if (injectionManager.isConnected()) {
+        const injectedGameState = injectionManager.getGameState();
+        if (injectedGameState) {
+          setGameState(injectedGameState);
+        }
+      } else {
+        // Fallback to mock data if injection fails
+        setGameState(prev => ({
+          ...prev,
+          threats: prev.threats.map(threat => ({
+            ...threat,
+            x: Math.max(5, Math.min(95, threat.x + (Math.random() - 0.5) * threat.speed)),
+            y: Math.max(5, Math.min(95, threat.y + (Math.random() - 0.5) * threat.speed))
+          }))
+        }));
+      }
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isConnected]);
 
   const handleConnect = () => {
     setIsConnected(!isConnected);
+  };
+
+  const handleInjectionChange = (injected: boolean) => {
+    setIsConnected(injected);
   };
 
   const handleConfigChange = (newConfig: typeof dodgeSettings) => {
@@ -66,13 +82,14 @@ const Index = () => {
         <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
           RotMG AutoDodge Client
         </h1>
-        <p className="text-slate-400">Advanced projectile avoidance system</p>
+        <p className="text-slate-400">Advanced projectile avoidance system with memory injection</p>
       </div>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="space-y-6">
+          <ProcessScanner onInjectionChange={handleInjectionChange} />
           <GameStatus 
             isConnected={isConnected}
             gameState={gameState}
