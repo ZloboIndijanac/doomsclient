@@ -110,13 +110,16 @@ export class InjectionManager {
     const threats = [];
     const threatCount = Math.floor(Math.random() * 5) + 1;
     
+    const threatTypes: ('projectile' | 'enemy')[] = ['projectile', 'enemy'];
+    const dangerLevels: ('low' | 'medium' | 'high')[] = ['low', 'medium', 'high'];
+    
     for (let i = 0; i < threatCount; i++) {
       threats.push({
         id: i + 1,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        type: Math.random() > 0.5 ? 'projectile' as const : 'enemy' as const,
-        danger: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as const,
+        type: threatTypes[Math.floor(Math.random() * threatTypes.length)],
+        danger: dangerLevels[Math.floor(Math.random() * dangerLevels.length)],
         speed: Math.floor(Math.random() * 10) + 1
       });
     }
